@@ -11,15 +11,15 @@ const localDB = new Promise((res, rej) => {
   const r = indexedDB.open('painel-files', 1);
   r.onupgradeneeded = () => r.result.createObjectStore('files', { keyPath: 'id' });
   r.onsuccess = () => res(r.result);
-  r.onerror   = () => rej(r.error);
+  r.onerror = () => rej(r.error);
 });
 
 async function dbAccess(action, value) {
   const db = await localDB;
   return new Promise((ok, fail) => {
-    const tx    = db.transaction('files', action === 'getAll' ? 'readonly' : 'readwrite');
+    const tx = db.transaction('files', action === 'getAll' ? 'readonly' : 'readwrite');
     const store = tx.objectStore('files');
-    const req   = action === 'getAll' ? store.getAll() : store[action](value);
+    const req = action === 'getAll' ? store.getAll() : store[action](value);
     tx.oncomplete = () => ok(req.result);
     tx.onerror = tx.onabort = () => fail(tx.error);
   });
@@ -33,7 +33,7 @@ async function sheetsApi(action, param) {
   if (!base) throw new Error('configure');
   const u = new URL(base);
   u.searchParams.set('action', action);
-  if (action === 'put')    u.searchParams.set('item', JSON.stringify(param));
+  if (action === 'put') u.searchParams.set('item', JSON.stringify(param));
   if (action === 'delete') u.searchParams.set('id', String(param));
   const res = await fetch(u.toString(), { redirect: 'follow' });
   if (!res.ok) throw new Error('Erro de rede (' + res.status + ').');
@@ -45,12 +45,12 @@ async function sheetsApi(action, param) {
 // ── Migração dos dados do banco antigo (IndexedDB painel-atalhos-*) ─────────
 async function migrateOldData() {
   if (!indexedDB.databases) return 0;
-  const all    = await indexedDB.databases();
+  const all = await indexedDB.databases();
   const oldDbs = all.filter(d => d.name && d.name.startsWith('painel-atalhos-'));
   let count = 0;
   for (const info of oldDbs) {
     try {
-      const db    = await new Promise((res, rej) => { const r = indexedDB.open(info.name); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+      const db = await new Promise((res, rej) => { const r = indexedDB.open(info.name); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
       const items = await new Promise((ok, fail) => { const tx = db.transaction('items', 'readonly'); const req = tx.objectStore('items').getAll(); tx.oncomplete = () => ok(req.result); tx.onerror = () => fail(tx.error); });
       db.close();
       for (const item of items) {
@@ -81,17 +81,17 @@ function ImageThumb({ item }) {
 
 // ── App principal ────────────────────────────────────────────────────────────
 function App() {
-  const [page,        setPage]        = useState(location.hash);
-  const [items,       setItems]       = useState([]);
-  const [draft,       setDraft]       = useState(EMPTY);
-  const [file,        setFile]        = useState(null);
-  const [query,       setQuery]       = useState('');
-  const [error,       setError]       = useState('');
-  const [notice,      setNotice]      = useState('');
-  const [busy,        setBusy]        = useState(false);
-  const [syncing,     setSyncing]     = useState(false);
-  const [view,        setView]        = useState(null);
-  const [scriptUrl,   setScriptUrl]   = useState(getScriptUrl());
+  const [page, setPage] = useState(location.hash);
+  const [items, setItems] = useState([]);
+  const [draft, setDraft] = useState(EMPTY);
+  const [file, setFile] = useState(null);
+  const [query, setQuery] = useState('');
+  const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [view, setView] = useState(null);
+  const [scriptUrl, setScriptUrl] = useState(getScriptUrl());
   const [configInput, setConfigInput] = useState(getScriptUrl());
 
   const manage = page === '#cadastro';
@@ -147,23 +147,23 @@ function App() {
   async function save(e) {
     e.preventDefault(); setError(''); setBusy(true);
     try {
-      const name    = draft.name.trim();
-      const url     = draft.url.trim();
+      const name = draft.name.trim();
+      const url = draft.url.trim();
       const useFile = file || (!url && draft.file instanceof File ? draft.file : null);
 
       if (!name) throw new Error('Digite um nome para o botão.');
       if (!useFile && !/^https?:\/\//i.test(url)) throw new Error('Cole um link completo ou escolha uma imagem.');
       if (!useFile) { try { new URL(url); } catch { throw new Error('Confira o endereço do link.'); } }
 
-      const id   = draft.id   || crypto.randomUUID();
+      const id = draft.id || crypto.randomUUID();
       const time = draft.time || Date.now();
 
       if (useFile) {
         await dbAccess('put', { id, name, url: '', file: useFile, type: 'Imagem', time, _local: true });
-        if (draft._cloud) await sheetsApi('delete', id).catch(() => {});
+        if (draft._cloud) await sheetsApi('delete', id).catch(() => { });
       } else {
         await sheetsApi('put', { id, name, url, type: draft.type, time });
-        if (draft._local) await dbAccess('delete', id).catch(() => {});
+        if (draft._local) await dbAccess('delete', id).catch(() => { });
       }
 
       await refresh(); reset(); setQuery(''); location.hash = 'inicio';
@@ -178,7 +178,7 @@ function App() {
       const u = new URL(url);
       if (u.hostname === 'script.google.com') type = TYPES[0];
       if (u.hostname === 'docs.google.com' && u.pathname.startsWith('/spreadsheets/')) type = TYPES[1];
-    } catch {}
+    } catch { }
     setDraft({ ...draft, url, type });
   }
 
@@ -229,7 +229,7 @@ function App() {
       </div>
     </header>
     <main>
-      {error  && <p role="alert" className="error">{error}</p>}
+      {error && <p role="alert" className="error">{error}</p>}
       {notice && <p className="notice">{notice}</p>}
 
       {!scriptUrl ? <>
@@ -311,8 +311,8 @@ function App() {
 
     <nav aria-label="Navegação principal">
       <div>
-        <a href="#inicio"   aria-current={!manage ? 'page' : undefined}>▦ Início</a>
-        <a href="#cadastro" aria-current={manage  ? 'page' : undefined}>＋ Cadastro</a>
+        <a href="#inicio" aria-current={!manage ? 'page' : undefined}>▦ Início</a>
+        <a href="#cadastro" aria-current={manage ? 'page' : undefined}>＋ Cadastro</a>
       </div>
     </nav>
 
