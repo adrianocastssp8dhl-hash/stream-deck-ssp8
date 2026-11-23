@@ -279,17 +279,8 @@ function App() {
         {configBlock}
       </> : <>
         {/* ── Início ── */}
-        <h1>Meus atalhos</h1>
-        <p>Acesse suas ferramentas e referências do dia a dia.</p>
-        <h2>Ferramentas Google</h2>
-        <section className="quick">
-          {[['Apps Script', 'https://script.google.com/home'], ['Google Sheets', 'https://docs.google.com/spreadsheets/']].map(([name, url], idx) =>
-            <a key={name} href={url} target="_blank" rel="noopener">
-              <span className="symbol">{GLYPH[idx]}</span><b>{name}</b>
-            </a>)}
-        </section>
-        <div className="title">
-          <h2>Minha coleção</h2>
+        <div className="title home-title">
+          <h1>Meus atalhos</h1>
           <small>{items.length} {items.length === 1 ? 'atalho' : 'atalhos'}</small>
         </div>
         {items.length > 0 &&
