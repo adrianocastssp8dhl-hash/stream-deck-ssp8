@@ -1,0 +1,17 @@
+{
+  "name": "painel",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "esbuild src.jsx --bundle --minify --outfile=docs/app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "esbuild": "^0.28.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  }
+}
